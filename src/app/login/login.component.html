@@ -1,0 +1,47 @@
+<section class="login-page">
+  <div class="login-panel">
+    <a class="back-link" routerLink="/">返回問卷列表</a>
+
+    <p class="eyebrow">問卷平台</p>
+    <h1>登入</h1>
+    <p class="description">登入後可以建立問卷，並管理自己建立的問卷。</p>
+
+    @if (noticeMessage) {
+      <p class="notice-message" role="status">{{ noticeMessage }}</p>
+    }
+
+    <form (ngSubmit)="submitLogin()">
+      <label class="field">
+        <span>Email</span>
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          autocomplete="email"
+          placeholder="請輸入 Email"
+        />
+      </label>
+
+      <label class="field">
+        <span>密碼</span>
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          placeholder="請輸入密碼"
+        />
+      </label>
+
+      @if (errorMessage) {
+        <p class="error-message" role="alert">{{ errorMessage }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? '登入中...' : '登入' }}
+      </button>
+    </form>
+
+    <p class="account-link">還沒有帳號？<a routerLink="/register">註冊新帳號</a></p>
+  </div>
+</section>

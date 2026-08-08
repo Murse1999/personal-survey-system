@@ -1,0 +1,60 @@
+<section class="stats-page">
+  <a class="back-link" routerLink="/">返回列表</a>
+
+  @if (isLoading) {
+    <section class="stats-state">正在載入統計...</section>
+  } @else if (errorMessage) {
+    <section class="stats-state error-message">{{ errorMessage }}</section>
+  } @else if (statistics) {
+    <header class="stats-header">
+      <p>問卷統計</p>
+      <h1>{{ statistics.quizTitle }}</h1>
+      <strong>總填答人數：{{ statistics.totalRespondents }}</strong>
+    </header>
+
+    <div class="chart-grid">
+      @for (question of statistics.questionStats; track question.questionId) {
+        <article class="chart-card">
+          <div class="card-heading">
+            <span class="card-number">{{ question.questionNum }}</span>
+            <div>
+              <h2>{{ question.questionTitle }}</h2>
+              <p>{{ question.questionType }}</p>
+            </div>
+          </div>
+
+          @if (hasOptions(question)) {
+            <div class="chart-layout">
+              <div class="chart-frame">
+                <canvas
+                  #chartCanvas
+                  [attr.data-question-id]="question.questionId"
+                  [attr.aria-label]="question.questionTitle + '選項統計圖'"
+                ></canvas>
+              </div>
+
+              <div class="summary-list" aria-label="選項統計">
+                @for (option of question.optionStats; track option.optionId) {
+                  <div>
+                    <span>{{ option.optionText }}</span>
+                    <strong>{{ option.selectedCount }} 人 / {{ option.percentage }}%</strong>
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <div class="text-answers">
+              @for (answer of question.textAnswers; track $index) {
+                <p>{{ answer }}</p>
+              } @empty {
+                <p>目前沒有文字回答。</p>
+              }
+            </div>
+          }
+        </article>
+      } @empty {
+        <section class="stats-state">這份問卷目前沒有題目。</section>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,245 @@
+:host {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 18px 0 40px;
+  color: #f7f7f7;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.stats-page {
+  animation: statsIn 520ms ease-out both;
+}
+
+.stats-state {
+  padding: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(8, 10, 18, 0.68);
+  font-weight: 800;
+}
+
+.error-message {
+  color: #ffadad;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  margin-bottom: 18px;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.stats-header {
+  margin-bottom: 22px;
+}
+
+.stats-header p {
+  margin: 0 0 8px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.06;
+  text-shadow:
+    0 0 28px rgba(255, 255, 255, 0.18),
+    0 0 46px rgba(255, 255, 255, 0.12);
+}
+
+.chart-grid {
+  display: grid;
+  gap: 22px;
+}
+
+.chart-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 24px;
+  background: rgba(8, 10, 18, 0.68);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.62),
+    0 14px 34px rgba(48, 102, 255, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -28px 60px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(18px) saturate(1.2);
+}
+
+.chart-card::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 32%),
+    linear-gradient(315deg, rgba(146, 44, 72, 0.22), transparent 45%);
+}
+
+.card-heading,
+.chart-layout {
+  position: relative;
+  z-index: 1;
+}
+
+.card-heading {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.card-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+h2 {
+  color: #fff;
+  font-size: 22px;
+}
+
+.card-heading p {
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.chart-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 520px) minmax(220px, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+
+.chart-frame {
+  display: grid;
+  place-items: center;
+  height: 380px;
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.1), transparent 48%),
+    rgba(0, 0, 0, 0.34);
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.summary-list {
+  display: grid;
+  gap: 12px;
+}
+
+.summary-list div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 54px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.summary-list span {
+  color: rgba(255, 255, 255, 0.68);
+  font-weight: 800;
+}
+
+.summary-list strong {
+  color: #fff;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.text-answers {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.text-answers p {
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.32);
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.7;
+}
+
+@keyframes statsIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 820px) {
+  :host {
+    padding: 8px 0 28px;
+  }
+
+  .chart-card {
+    padding: 18px;
+  }
+
+  .chart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-frame {
+    height: 300px;
+  }
+
+  canvas {
+    height: 100% !important;
+  }
+}

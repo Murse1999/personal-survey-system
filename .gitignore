@@ -2,6 +2,9 @@
 
 # Compiled output
 /dist
+/backend/build
+/backend/.gradle
+/Personal-Project-complete.zip
 /tmp
 /out-tsc
 /bazel-out
@@ -37,6 +40,11 @@ yarn-error.log
 testem.log
 /typings
 
+# Environment files and packaged artifacts
+.env
+*.zip
+
 # System files
 .DS_Store
+**/.DS_Store
 Thumbs.db

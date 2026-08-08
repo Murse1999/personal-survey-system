@@ -1,0 +1,110 @@
+<section class="survey-page">
+  <a class="back-link" routerLink="/">返回問卷列表</a>
+
+  @if (isLoading) {
+    <section class="survey-panel state-panel">正在載入問卷...</section>
+  } @else if (errorMessage && !quiz) {
+    <section class="survey-panel state-panel error-message">{{ errorMessage }}</section>
+  } @else if (quiz) {
+    <form class="survey-panel" (ngSubmit)="submit()">
+      <header class="survey-header">
+        <div>
+          <p class="eyebrow">問卷作答</p>
+          <h1>{{ quiz.title }}</h1>
+        </div>
+
+        <div class="survey-period">
+          <span>問卷開放期間</span>
+          <strong>{{ quiz.startDate | date:'yyyy/MM/dd' }} - {{ quiz.endDate | date:'yyyy/MM/dd' }}</strong>
+        </div>
+      </header>
+
+      <section class="survey-intro" aria-labelledby="survey-description">
+        <h2 id="survey-description">問卷說明</h2>
+        <p>{{ quiz.description || '這份問卷沒有另外的說明。' }}</p>
+      </section>
+
+      @if (!isOpenForAnswers()) {
+        <p class="form-message error-message" role="status">這份問卷目前不在開放填寫時間內。</p>
+      }
+
+      <section class="form-section" aria-labelledby="survey-questions">
+        <div class="section-heading">
+          <span>01</span>
+          <div>
+            <h2 id="survey-questions">問卷問題</h2>
+            <p>請完成標示為必填的題目。</p>
+          </div>
+        </div>
+
+        @if (quiz.questions.length === 0) {
+          <p class="empty-message">這份問卷目前沒有題目。</p>
+        }
+
+        @for (question of quiz.questions; track question.id) {
+          <fieldset class="question-block">
+            <legend>
+              {{ question.questionNum }}. {{ question.title }}
+              @if (question.isRequired) {
+                <b>必填</b>
+              }
+            </legend>
+
+            @if (question.type === 'SINGLE') {
+              @for (option of question.options; track option.id) {
+                <label>
+                  <input
+                    type="radio"
+                    [name]="'question-' + question.id"
+                    [checked]="isOptionSelected(question.id, option.id)"
+                    (change)="selectSingle(question.id, option.id)"
+                  />
+                  {{ option.optionCode }}. {{ option.optionText }}
+                </label>
+              }
+            }
+
+            @if (question.type === 'MULTI') {
+              @for (option of question.options; track option.id) {
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="isOptionSelected(question.id, option.id)"
+                    (change)="toggleOption(question.id, option.id)"
+                  />
+                  {{ option.optionCode }}. {{ option.optionText }}
+                </label>
+              }
+            }
+
+            @if (question.type === 'TEXT') {
+              <textarea
+                rows="4"
+                [name]="'question-' + question.id"
+                [(ngModel)]="textAnswers[question.id]"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="clearAnswerError()"
+                placeholder="請輸入你的回答"
+              ></textarea>
+            }
+          </fieldset>
+        }
+      </section>
+
+      @if (errorMessage) {
+        <p class="form-message error-message" role="alert">{{ errorMessage }}</p>
+      }
+
+      @if (successMessage) {
+        <p class="form-message success-message" role="status">{{ successMessage }}</p>
+      }
+
+      <footer class="form-actions">
+        <a class="cancel-button" routerLink="/">取消</a>
+        <button class="primary-button" type="submit" [disabled]="isSubmitting || quiz.questions.length === 0 || !isOpenForAnswers()">
+          {{ isSubmitting ? '提交中...' : '提交問卷' }}
+        </button>
+      </footer>
+    </form>
+  }
+</section>

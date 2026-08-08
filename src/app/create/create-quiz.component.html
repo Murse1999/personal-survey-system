@@ -1,0 +1,184 @@
+<section class="create-page">
+  <a class="back-link" routerLink="/">返回問卷列表</a>
+
+  <form class="create-panel" (ngSubmit)="submit()">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">問卷管理</p>
+        <h1>{{ isEditMode ? '編輯問卷' : '建立問卷' }}</h1>
+      </div>
+      <p>登入使用者可以建立問卷，建立後只有本人或管理員可以修改。</p>
+      <button class="preview-button" type="button" (click)="togglePreview()">
+        {{ isPreviewMode ? '返回編輯' : '預覽問卷' }}
+      </button>
+    </header>
+
+    @if (isLoadingQuiz) {
+      <section class="form-section loading-state">正在載入問卷...</section>
+    } @else if (!isPreviewMode) {
+    <section class="form-section">
+      <div class="field-grid">
+        <label class="field field-wide">
+          <span>問卷標題</span>
+          <input name="title" [(ngModel)]="title" required placeholder="例如：產品使用習慣調查" />
+        </label>
+
+        <label class="field field-wide">
+          <span>問卷說明</span>
+          <textarea name="description" [(ngModel)]="description" rows="3" placeholder="說明這份問卷的目的"></textarea>
+        </label>
+
+        <label class="field">
+          <span>開始日期</span>
+          <input type="date" name="startDate" [(ngModel)]="startDate" required />
+        </label>
+
+        <label class="field">
+          <span>結束日期</span>
+          <input type="date" name="endDate" [(ngModel)]="endDate" required />
+        </label>
+      </div>
+
+      <label class="publish-toggle">
+        <input type="checkbox" name="isPublished" [(ngModel)]="isPublished" />
+        <span>建立後立即發布</span>
+      </label>
+    </section>
+
+    <section class="form-section">
+      <div class="section-heading">
+        <div>
+          <h2>問卷題目</h2>
+          <p>選擇題可以加入選項，文字題不需要選項。</p>
+        </div>
+        <button class="secondary-button" type="button" (click)="addQuestion()">新增題目</button>
+      </div>
+
+      @for (question of questions; track question.id; let questionIndex = $index) {
+        <article class="question-editor">
+          <div class="question-heading">
+            <h3>第 {{ question.questionNum }} 題</h3>
+            @if (questions.length > 1) {
+              <button class="text-button" type="button" (click)="removeQuestion(questionIndex)">移除題目</button>
+            }
+          </div>
+
+          <label class="field">
+            <span>題目內容</span>
+            <input
+              [name]="'question-title-' + question.id"
+              [(ngModel)]="question.title"
+              required
+              placeholder="請輸入題目"
+            />
+          </label>
+
+          <div class="question-settings">
+            <label class="field">
+              <span>題型</span>
+              <select [name]="'question-type-' + question.id" [(ngModel)]="question.type">
+                <option value="SINGLE">單選題</option>
+                <option value="MULTI">複選題</option>
+                <option value="TEXT">文字題</option>
+              </select>
+            </label>
+
+            <label class="publish-toggle">
+              <input
+                type="checkbox"
+                [name]="'question-required-' + question.id"
+                [(ngModel)]="question.isRequired"
+              />
+              <span>必填（可取消）</span>
+            </label>
+          </div>
+
+          @if (question.type !== 'TEXT') {
+            <div class="options-editor">
+              <div class="options-heading">
+                <span>選項</span>
+                <button class="text-button" type="button" (click)="addOption(question)">新增選項</button>
+              </div>
+
+              @for (option of question.options; track $index; let optionIndex = $index) {
+                <div class="option-row">
+                  <input
+                    class="option-code"
+                    [name]="'option-code-' + question.id + '-' + optionIndex"
+                    [(ngModel)]="option.optionCode"
+                    maxlength="10"
+                    aria-label="選項代號"
+                  />
+                  <input
+                    [name]="'option-text-' + question.id + '-' + optionIndex"
+                    [(ngModel)]="option.optionText"
+                    required
+                    placeholder="選項文字"
+                  />
+                  <button class="icon-button" type="button" (click)="removeOption(question, optionIndex)" title="移除選項">×</button>
+                </div>
+              }
+            </div>
+          }
+        </article>
+      }
+    </section>
+    } @else {
+      <section class="preview-section" aria-label="問卷預覽">
+        <div class="preview-heading">
+          <div>
+            <p class="eyebrow">預覽模式</p>
+            <h2>{{ title || '尚未輸入問卷標題' }}</h2>
+            <p>{{ description || '這份問卷沒有另外的說明。' }}</p>
+          </div>
+          <div class="preview-period">
+            <span>開放期間</span>
+            <strong>{{ startDate || '未設定' }} - {{ endDate || '未設定' }}</strong>
+          </div>
+        </div>
+
+        <div class="preview-questions">
+          @for (question of questions; track question.id) {
+            <article class="preview-question">
+              <h3>
+                {{ question.questionNum }}. {{ question.title || '尚未輸入題目' }}
+                @if (question.isRequired) {
+                  <b>必填</b>
+                }
+              </h3>
+
+              @if (question.type === 'TEXT') {
+                <textarea rows="3" placeholder="文字回答區" disabled></textarea>
+              } @else {
+                <div class="preview-options">
+                  @for (option of question.options; track $index) {
+                    <label>
+                      <input [type]="question.type === 'SINGLE' ? 'radio' : 'checkbox'" disabled />
+                      {{ option.optionCode }}. {{ option.optionText || '尚未輸入選項' }}
+                    </label>
+                  }
+                </div>
+              }
+            </article>
+          } @empty {
+            <p class="empty-preview">目前沒有題目。</p>
+          }
+        </div>
+      </section>
+    }
+
+    @if (errorMessage) {
+      <p class="error-message" role="alert">{{ errorMessage }}</p>
+    }
+
+    <footer class="form-actions">
+      <a class="cancel-button" routerLink="/">取消</a>
+      @if (isPreviewMode) {
+        <button class="secondary-button" type="button" (click)="togglePreview()">返回編輯</button>
+      }
+      <button class="primary-button" type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? '儲存中...' : (isEditMode ? '儲存問卷' : '建立問卷') }}
+      </button>
+    </footer>
+  </form>
+</section>

@@ -1,0 +1,51 @@
+<section class="register-page">
+  <div class="register-panel">
+    <a class="back-link" routerLink="/">返回問卷列表</a>
+
+    <p class="eyebrow">問卷平台</p>
+    <h1>註冊</h1>
+    <p class="description">建立帳號後，就可以建立問卷和填寫已發布的問卷。</p>
+
+    <form (ngSubmit)="submit()">
+      <label class="field">
+        <span>姓名</span>
+        <input type="text" name="name" [(ngModel)]="name" autocomplete="name" required />
+      </label>
+
+      <label class="field">
+        <span>電話</span>
+        <input type="tel" name="phone" [(ngModel)]="phone" autocomplete="tel" required />
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" [(ngModel)]="email" autocomplete="email" required />
+      </label>
+
+      <label class="field">
+        <span>年齡（選填）</span>
+        <input type="number" name="age" [(ngModel)]="age" min="0" />
+      </label>
+
+      <label class="field">
+        <span>密碼</span>
+        <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required />
+      </label>
+
+      <label class="field">
+        <span>再次輸入密碼</span>
+        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" autocomplete="new-password" required />
+      </label>
+
+      @if (errorMessage) {
+        <p class="error-message" role="alert">{{ errorMessage }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? '註冊中...' : '建立帳號' }}
+      </button>
+    </form>
+
+    <p class="account-link">已經有帳號？<a routerLink="/login">前往登入</a></p>
+  </div>
+</section>

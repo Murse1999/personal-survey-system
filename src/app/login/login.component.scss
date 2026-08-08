@@ -1,0 +1,135 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #f7f7f7;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 28px;
+}
+
+.login-panel {
+  width: min(440px, 100%);
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 20px;
+  background: rgba(7, 9, 18, 0.82);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(20px);
+}
+
+.back-link {
+  display: inline-flex;
+  margin-bottom: 34px;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.back-link::before {
+  content: "←";
+  margin-right: 8px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #89c7ff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+h1 {
+  margin: 0;
+  font-size: 42px;
+}
+
+.description {
+  margin: 10px 0 26px;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.7;
+}
+
+form {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+input {
+  min-height: 48px;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.52);
+  color: #fff;
+  font: inherit;
+}
+
+input:focus,
+button:focus-visible,
+.back-link:focus-visible {
+  outline: none;
+  border-color: rgba(132, 202, 255, 0.82);
+  box-shadow: 0 0 0 3px rgba(79, 153, 255, 0.18);
+}
+
+button {
+  min-height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.56;
+}
+
+.error-message {
+  margin: 0;
+  color: #ffadad;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.notice-message {
+  margin: 0 0 18px;
+  color: #b9f6ca;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.account-link {
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  text-align: center;
+}
+
+.account-link a {
+  margin-left: 6px;
+  color: #fff;
+  font-weight: 800;
+}
