@@ -1,0 +1,2 @@
+ALTER TABLE `user`
+    ADD COLUMN avatar_type VARCHAR(10) NOT NULL DEFAULT 'MALE';

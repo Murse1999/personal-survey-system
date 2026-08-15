@@ -1,6 +1,7 @@
 package com.example.personalproject.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
@@ -16,7 +17,9 @@ public class UserRequest {
   @Email(message = "Email 格式錯誤")
   private String email;
   @Min(value = 0, message = "年齡不可小於 0")
+  @Max(value = 120, message = "年齡不可大於 120")
   private Integer age;
+  private String avatarType;
 
   public String getPassword() {
     return password;
@@ -56,5 +59,13 @@ public class UserRequest {
 
   public void setAge(Integer age) {
     this.age = age;
+  }
+
+  public String getAvatarType() {
+    return avatarType;
+  }
+
+  public void setAvatarType(String avatarType) {
+    this.avatarType = avatarType;
   }
 }

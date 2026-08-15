@@ -171,14 +171,14 @@
       <p class="error-message" role="alert">{{ errorMessage }}</p>
     }
 
-    <footer class="form-actions">
-      <a class="cancel-button" routerLink="/">取消</a>
-      @if (isPreviewMode) {
-        <button class="secondary-button" type="button" (click)="togglePreview()">返回編輯</button>
-      }
-      <button class="primary-button" type="submit" [disabled]="isSubmitting">
-        {{ isSubmitting ? '儲存中...' : (isEditMode ? '儲存問卷' : '建立問卷') }}
-      </button>
-    </footer>
+      <footer class="form-actions">
+        <a class="cancel-button" routerLink="/">取消</a>
+        @if (isPreviewMode) {
+          <button class="secondary-button" type="button" (click)="togglePreview()">返回編輯</button>
+        }
+        <button class="primary-button" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? '儲存中...' : (isPreviewMode ? (isEditMode ? '儲存問卷' : '建立問卷') : '下一步') }}
+        </button>
+      </footer>
   </form>
 </section>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title>女生頭像</title>
+  <circle cx="128" cy="128" r="120" fill="#ffd0c4"/>
+  <path fill="#d96857" d="M74 112c0-35 24-63 54-63s54 28 54 63v29c0 14-4 27-11 38 33 13 57 36 67 65H18c10-29 34-52 67-65-7-11-11-24-11-38v-29Z"/>
+  <path fill="#a84438" d="M74 116c0-38 24-67 54-67s54 29 54 67v15c-15-15-33-23-54-23s-39 8-54 23v-15Z"/>
+</svg>

@@ -8,7 +8,7 @@
     </section>
   }
 
-  @if (isInsidePage() || piechartPage() || loginPage() || registerPage() || createPage() || quizPage()) {
+  @if (isInsidePage() || piechartPage() || loginPage() || registerPage() || createPage() || quizPage() || forgotPasswordPage()) {
     <router-outlet />
   } @else {
     <section class="page-wrap">
@@ -28,7 +28,13 @@
                 [attr.aria-expanded]="isAccountPanelOpen"
                 (click)="toggleAccountPanel()"
               >
-                {{ currentUser.email }}
+                <img
+                  class="mini-avatar"
+                  [src]="avatarImage(currentUser.avatarType)"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <span>{{ currentUser.name || currentUser.email }}</span>
               </button>
             }
             <button class="login-link" type="button" (click)="logout()">登出</button>
@@ -41,9 +47,18 @@
         @if (isAccountPanelOpen && currentUser) {
           <aside class="account-panel" aria-label="使用者資訊">
             <div class="account-panel-heading">
-              <div>
-                <span class="panel-eyebrow">使用者資訊</span>
-                <strong>{{ currentUser.email }}</strong>
+              <div class="account-identity">
+                <img
+                  class="account-avatar"
+                  [src]="avatarImage(currentUser.avatarType)"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <div>
+                  <span class="panel-eyebrow">使用者資訊</span>
+                  <strong>{{ currentUser.email }}</strong>
+                  <span class="account-role">{{ roleLabel(currentUser.role) }}</span>
+                </div>
               </div>
               <button
                 class="panel-close"
@@ -56,10 +71,81 @@
               </button>
             </div>
 
-            <div class="account-meta">
-              <span>帳號角色</span>
-              <b>{{ currentUser.role === 'ADMIN' ? '管理員' : '一般使用者' }}</b>
-            </div>
+            @if (isSettingsOpen) {
+              <form class="profile-settings" (ngSubmit)="saveProfile()">
+                <div class="profile-settings-heading">
+                  <div>
+                    <span class="panel-eyebrow">帳號設定</span>
+                    <h2>更改使用者資訊</h2>
+                  </div>
+                  @if (isLoadingProfile) {
+                    <span class="profile-loading">載入中...</span>
+                  }
+                </div>
+
+                <div class="avatar-setting">
+                  <span class="profile-field-label">固定頭像</span>
+                  <div class="avatar-choice-list">
+                    <button
+                      class="avatar-option"
+                      [class.selected]="settingsAvatarType === 'MALE'"
+                      type="button"
+                      (click)="selectAvatar('MALE')"
+                    >
+                      <img src="avatars/male-avatar.svg" alt="" aria-hidden="true" />
+                      <span>男生</span>
+                    </button>
+                    <button
+                      class="avatar-option"
+                      [class.selected]="settingsAvatarType === 'FEMALE'"
+                      type="button"
+                      (click)="selectAvatar('FEMALE')"
+                    >
+                      <img src="avatars/female-avatar.svg" alt="" aria-hidden="true" />
+                      <span>女生</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="profile-field-grid">
+                  <label class="profile-field">
+                    <span>姓名</span>
+                    <input name="profile-name" [(ngModel)]="settingsName" [disabled]="isSavingProfile" />
+                  </label>
+                  <label class="profile-field">
+                    <span>電話</span>
+                    <input name="profile-phone" [(ngModel)]="settingsPhone" [disabled]="isSavingProfile" />
+                  </label>
+                  <label class="profile-field">
+                    <span>年齡</span>
+                    <input
+                      type="number"
+                      name="profile-age"
+                      min="0"
+                      max="120"
+                      step="1"
+                      [(ngModel)]="settingsAge"
+                      [disabled]="isSavingProfile"
+                    />
+                  </label>
+                </div>
+
+                @if (profileError) {
+                  <p class="panel-state error-text">{{ profileError }}</p>
+                }
+
+                <div class="profile-settings-actions">
+                  <button type="button" (click)="closeSettings()">取消</button>
+                  <button type="submit" [disabled]="isSavingProfile || isLoadingProfile">
+                    {{ isSavingProfile ? '儲存中...' : '儲存設定' }}
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <button class="settings-button" type="button" (click)="openSettings()">
+                設定
+              </button>
+            }
 
             <section class="my-quizzes-section" aria-labelledby="my-quizzes-title">
               <div class="my-quizzes-heading">
@@ -103,7 +189,12 @@
       <section class="search-panel" aria-label="問卷搜尋">
         <label class="field title-field">
           <span>問卷標題</span>
-          <input type="search" placeholder="請輸入問卷標題" [(ngModel)]="search" />
+          <input
+            type="search"
+            placeholder="請輸入問卷標題"
+            [(ngModel)]="search"
+            (keydown.enter)="searchQuiz()"
+          />
         </label>
         <label class="field">
           <span>開始時間</span>

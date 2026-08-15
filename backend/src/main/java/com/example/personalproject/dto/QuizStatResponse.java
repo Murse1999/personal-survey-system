@@ -22,6 +22,9 @@ public class QuizStatResponse {
   // 每一題的統計資料。
   private List<QuestionStatDto> questionStats = new ArrayList<>();
 
+  // 填答者年齡區間統計。
+  private List<AgeStatDto> ageStats = new ArrayList<>();
+
   // Jackson 建立回傳物件時需要無參數建構子。
   public QuizStatResponse() {
   }
@@ -30,12 +33,14 @@ public class QuizStatResponse {
     Long quizId,
     String quizTitle,
     long totalRespondents,
-    List<QuestionStatDto> questionStats) {
+    List<QuestionStatDto> questionStats,
+    List<AgeStatDto> ageStats) {
 
     this.quizId = quizId;
     this.quizTitle = quizTitle;
     this.totalRespondents = totalRespondents;
     this.questionStats = questionStats;
+    this.ageStats = ageStats;
   }
 
   public Long getQuizId() {
@@ -68,5 +73,13 @@ public class QuizStatResponse {
 
   public void setQuestionStats(List<QuestionStatDto> questionStats) {
     this.questionStats = questionStats;
+  }
+
+  public List<AgeStatDto> getAgeStats() {
+    return ageStats;
+  }
+
+  public void setAgeStats(List<AgeStatDto> ageStats) {
+    this.ageStats = ageStats;
   }
 }

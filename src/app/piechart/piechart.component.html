@@ -12,6 +12,30 @@
       <strong>總填答人數：{{ statistics.totalRespondents }}</strong>
     </header>
 
+    <section class="age-stat-card" aria-labelledby="age-stat-title">
+      <div class="age-stat-heading">
+        <div>
+          <p>填答者分析</p>
+          <h2 id="age-stat-title">年齡統計</h2>
+        </div>
+        <span>依年齡區間顯示</span>
+      </div>
+
+      <div class="age-stat-list">
+        @for (ageStat of statistics.ageStats; track ageStat.label) {
+          <div class="age-stat-row">
+            <div class="age-stat-label">
+              <span>{{ ageStat.label }}</span>
+              <strong>{{ ageStat.count }} 人 · {{ ageStat.percentage }}%</strong>
+            </div>
+            <div class="age-bar" aria-hidden="true">
+              <span [style.width.%]="ageStat.percentage"></span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
     <div class="chart-grid">
       @for (question of statistics.questionStats; track question.questionId) {
         <article class="chart-card">

@@ -14,8 +14,24 @@ CREATE TABLE IF NOT EXISTS `user` (
     password VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     age INT,
+    avatar_type VARCHAR(10) NOT NULL DEFAULT 'MALE',
     role VARCHAR(20) NOT NULL DEFAULT 'USER',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 1-1. 忘記密碼的一次性驗證碼；只保存驗證碼雜湊，不保存明文。
+CREATE TABLE IF NOT EXISTS password_reset_token (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    code_hash VARCHAR(100) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME,
+    attempts INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_password_reset_email (email),
+    CONSTRAINT fk_password_reset_email
+        FOREIGN KEY (email) REFERENCES `user`(email)
+        ON DELETE CASCADE
 );
 
 -- 2. 問卷主表：記錄一份問卷的基本資料。

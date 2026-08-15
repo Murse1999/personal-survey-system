@@ -60,9 +60,9 @@
   grid-column: 2;
   grid-row: 1 / span 2;
   align-self: center;
-  border-color: rgba(137, 199, 255, 0.5);
-  background: rgba(87, 164, 255, 0.14);
-  color: #bfe1ff;
+  border-color: var(--button-border);
+  background: var(--button-bg);
+  color: var(--button-text);
 }
 
 .eyebrow {
@@ -231,10 +231,10 @@ button,
   min-height: 44px;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid var(--button-border);
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: var(--button-bg);
+  color: var(--button-text);
   cursor: pointer;
   padding: 0 14px;
   text-decoration: none;
@@ -244,11 +244,11 @@ button,
 button:hover:not(:disabled),
 .secondary-button:hover,
 .primary-button:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--button-bg-hover);
 }
 
 .primary-button {
-  border-color: rgba(139, 204, 255, 0.72);
+  border-color: var(--button-border);
 }
 
 .text-button {
@@ -256,7 +256,7 @@ button:hover:not(:disabled),
   padding: 0 8px;
   border: 0;
   background: transparent;
-  color: #9bd3ff;
+  color: var(--button-text);
   font-size: 13px;
 }
 

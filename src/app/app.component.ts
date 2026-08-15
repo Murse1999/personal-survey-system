@@ -1,10 +1,15 @@
 import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as THREE from 'three';
 
-import { AuthService, CurrentUser } from './core/auth.service';
+import {
+  AuthService,
+  AvatarType,
+  CurrentUser,
+  UserProfileUpdateRequest
+} from './core/auth.service';
 import { QuizApiService, QuizResponseDto } from './core/quiz-api.service';
 
 // 先定義一筆問卷資料應該有哪些欄位，這樣 TypeScript 比較知道資料長什麼樣子。
@@ -52,6 +57,14 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
   isMyQuizzesLoading = false;
   myQuizzesError = '';
   isAccountPanelOpen = false;
+  isSettingsOpen = false;
+  isLoadingProfile = false;
+  isSavingProfile = false;
+  profileError = '';
+  settingsName = '';
+  settingsPhone = '';
+  settingsAge: number | null = null;
+  settingsAvatarType: AvatarType = 'MALE';
 
   private renderer?: THREE.WebGLRenderer;
   private scene?: THREE.Scene;
@@ -65,6 +78,7 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
   private introAnimationId = 0;
   private introTimerId = 0;
   private currentUserSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
   constructor(
     private ngZone: NgZone,
@@ -82,6 +96,18 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
       } else {
         this.myQuizzes = [];
         this.isAccountPanelOpen = false;
+        this.isSettingsOpen = false;
+      }
+    });
+
+    this.routerSubscription = this.router.events.subscribe((event) => {
+      if (!(event instanceof NavigationEnd) || event.urlAfterRedirects !== '/') {
+        return;
+      }
+
+      this.loadPublicQuizzes();
+      if (this.currentUser) {
+        this.loadMyQuizzes();
       }
     });
 
@@ -102,6 +128,10 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.router.url.startsWith('/register');
   }
 
+  forgotPasswordPage(): boolean {
+    return this.router.url.startsWith('/forgot-password');
+  }
+
   createPage(): boolean {
     return this.router.url.startsWith('/create');
   }
@@ -118,6 +148,10 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.authService.getCurrentUser()?.role === 'ADMIN';
   }
 
+  roleLabel(role: string | undefined): string {
+    return role === 'ADMIN' ? '管理員' : '一般使用者';
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigateByUrl('/');
@@ -125,6 +159,81 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
 
   toggleAccountPanel(): void {
     this.isAccountPanelOpen = !this.isAccountPanelOpen;
+  }
+
+  openSettings(): void {
+    if (!this.currentUser) {
+      return;
+    }
+
+    this.isSettingsOpen = true;
+    this.profileError = '';
+    this.syncSettings(this.currentUser);
+    this.isLoadingProfile = true;
+
+    this.authService.getMyProfile().subscribe({
+      next: (profile) => {
+        this.syncSettings(profile);
+        this.isLoadingProfile = false;
+      },
+      error: () => {
+        this.isLoadingProfile = false;
+        this.profileError = '目前無法載入使用者設定';
+      }
+    });
+  }
+
+  closeSettings(): void {
+    this.isSettingsOpen = false;
+    this.profileError = '';
+  }
+
+  selectAvatar(type: AvatarType): void {
+    this.settingsAvatarType = type;
+  }
+
+  saveProfile(): void {
+    this.profileError = '';
+
+    if (!this.settingsName.trim() || !this.settingsPhone.trim()) {
+      this.profileError = '請完成姓名和電話';
+      return;
+    }
+
+    if (
+      this.settingsAge !== null
+      && (!Number.isInteger(this.settingsAge)
+        || this.settingsAge < 0
+        || this.settingsAge > 120)
+    ) {
+      this.profileError = '年齡請填寫 0 到 120 的整數';
+      return;
+    }
+
+    const request: UserProfileUpdateRequest = {
+      name: this.settingsName.trim(),
+      phone: this.settingsPhone.trim(),
+      age: this.settingsAge,
+      avatarType: this.settingsAvatarType
+    };
+
+    this.isSavingProfile = true;
+    this.authService.updateMyProfile(request).subscribe({
+      next: () => {
+        this.isSavingProfile = false;
+        this.isSettingsOpen = false;
+      },
+      error: (error) => {
+        this.isSavingProfile = false;
+        this.profileError = error.error || '更新使用者設定失敗';
+      }
+    });
+  }
+
+  avatarImage(type: AvatarType | undefined): string {
+    return type === 'FEMALE'
+      ? 'avatars/female-avatar.svg'
+      : 'avatars/male-avatar.svg';
   }
 
   canManageQuiz(quizId: number): boolean {
@@ -203,42 +312,30 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
       }
     });
   }
-  searchQuiz(): void {
-    // 第 1 步：先拿到使用者輸入的搜尋文字，trim() 會把前後空白拿掉。
-    const searchKeyword = this.search.trim();
 
-    // 第 2 步：filter 會一筆一筆檢查 allQuizzes。
-    // return true 代表留下這筆問卷；return false 代表不要顯示這筆問卷。
+  private syncSettings(user: Pick<CurrentUser, 'name' | 'phone' | 'age' | 'avatarType'>): void {
+    this.settingsName = user.name;
+    this.settingsPhone = user.phone;
+    this.settingsAge = user.age;
+    this.settingsAvatarType = user.avatarType;
+  }
+
+  searchQuiz(): void {
+    // 標題、開始日期、結束日期都是可選條件，可以只填其中一項。
+    const searchKeyword = this.search.trim().toLocaleLowerCase();
+
     this.filteredQuizzes = this.allQuizzes.filter((quiz) => {
-      // 第 3 步：把問卷資料的日期格式轉成跟 input type="date" 一樣。
-      // 原本資料是 2026/06/01，轉完會變成 2026-06-01。
       const quizStartDate = this.toInputDate(quiz.startDate);
       const quizEndDate = this.toInputDate(quiz.endDate);
 
-      // 第 4 步：先假設這筆問卷符合條件。
-      // 後面只要發現有一個條件不符合，就把它改成 false。
-      let isMatched = true;
+      const titleMatches = searchKeyword === ''
+        || quiz.title.toLocaleLowerCase().includes(searchKeyword);
+      const startDateMatches = this.firsttime === ''
+        || quizStartDate >= this.firsttime;
+      const endDateMatches = this.endtime === ''
+        || quizEndDate <= this.endtime;
 
-      // 第 5 步：檢查標題。
-      // 有輸入關鍵字，而且問卷名稱沒有包含關鍵字，就代表不符合。
-      if (searchKeyword !== '' && !quiz.title.includes(searchKeyword)) {
-        isMatched = false;
-      }
-
-      // 第 6 步：檢查開始日期。
-      // 有選開始日期，而且問卷開始日比使用者選的日期早，就代表不符合。
-      if (this.firsttime !== '' && quizStartDate < this.firsttime) {
-        isMatched = false;
-      }
-
-      // 第 7 步：檢查結束日期。
-      // 有選結束日期，而且問卷結束日比使用者選的日期晚，就代表不符合。
-      if (this.endtime !== '' && quizEndDate > this.endtime) {
-        isMatched = false;
-      }
-
-      // 第 8 步：把最後判斷結果交給 filter。
-      return isMatched;
+      return titleMatches && startDateMatches && endDateMatches;
     });
     this.currentPage = 1;
   }
@@ -306,6 +403,7 @@ export class AppComponent implements AfterViewInit, OnDestroy, OnInit {
     cancelAnimationFrame(this.animationId);
     window.clearTimeout(this.introTimerId);
     this.stopIntroBackground();
+    this.routerSubscription?.unsubscribe();
     window.removeEventListener('resize', this.resizeShaderBackground);
     window.removeEventListener('resize', this.resizeIntroBackground);
     this.renderer?.dispose();

@@ -44,6 +44,15 @@ public class GlobalExceptionHandler {
       .body(exception.getMessage());
   }
 
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<String> handleIllegalStateException(
+    IllegalStateException exception) {
+
+    return ResponseEntity
+      .status(HttpStatus.SERVICE_UNAVAILABLE)
+      .body(exception.getMessage());
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<String> handleException(Exception exception) {
 

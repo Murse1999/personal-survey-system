@@ -39,6 +39,10 @@ public class User {
 
     private Integer age;
 
+    // 固定頭像類型，只允許 MALE 或 FEMALE；真正的圖片由前端 assets 提供。
+    @Column(name = "avatar_type", nullable = false, length = 10)
+    private String avatarType = "MALE";
+
     // 使用者角色，例如 USER 或 ADMIN；新使用者預設是一般使用者。
     @Column(nullable = false, length = 20)
     private String role = "USER";
@@ -74,6 +78,8 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public Integer getAge() { return age; }
     public void setAge(Integer age) { this.age = age; }
+    public String getAvatarType() { return avatarType; }
+    public void setAvatarType(String avatarType) { this.avatarType = avatarType; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
     public LocalDateTime getCreatedAt() { return createdAt; }

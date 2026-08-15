@@ -188,7 +188,9 @@ public class QuizService {
         throw new AccessDeniedException("這份問卷尚未發布");
       }
 
-      return seeQuiz(id);
+      QuizResponseDto responseDto = seeQuiz(id);
+      responseDto.setIsOwner(isOwner);
+      return responseDto;
     }
 
     @Transactional (readOnly=true)
@@ -416,6 +418,10 @@ public class QuizService {
 
     Quiz quiz = findQuiz.get();
 
+    if (Objects.equals(quiz.getOwnerEmail(), currentUserEmail)) {
+      throw new AccessDeniedException("問卷建立者不需要填寫自己的問卷");
+    }
+
     if (!quiz.getIsPublished()) {
       throw new IllegalArgumentException("此問卷尚未發布");
     }
@@ -602,6 +608,7 @@ public class QuizService {
       );
       List<QuizResponse> quizResponses = quizResponseRepository.findByQuizId(quizId);
       long totalRespondents = quizResponses.size();
+      List<AgeStatDto> ageStats = buildAgeStats(quizResponses);
 
       // 先把這份問卷所有人的答案明細集中起來。
       // 每一筆 ResponseDetail 代表某個人回答某一題的結果。
@@ -722,8 +729,41 @@ public class QuizService {
         quiz1.getId(),
         quiz1.getTitle(),
         totalRespondents,
-        questionStats
+        questionStats,
+        ageStats
       );
+    }
+
+    private List<AgeStatDto> buildAgeStats(List<QuizResponse> quizResponses) {
+      String[] labels = {"0-17 歲", "18-29 歲", "30-39 歲", "40-49 歲", "50 歲以上", "未填寫"};
+      long[] counts = new long[labels.length];
+
+      for (QuizResponse response : quizResponses) {
+        User user = userRepository.findByEmail(response.getUserEmail()).orElse(null);
+        Integer age = user == null ? null : user.getAge();
+        int bucket = age == null
+          ? 5
+          : age < 18 ? 0
+          : age < 30 ? 1
+          : age < 40 ? 2
+          : age < 50 ? 3
+          : 4;
+        counts[bucket]++;
+      }
+
+      long total = quizResponses.size();
+      List<AgeStatDto> stats = new ArrayList<>();
+      for (int index = 0; index < labels.length; index++) {
+        BigDecimal percentage = BigDecimal.ZERO;
+        if (total > 0) {
+          percentage = BigDecimal.valueOf(counts[index])
+            .multiply(BigDecimal.valueOf(100))
+            .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
+        }
+        stats.add(new AgeStatDto(labels[index], counts[index], percentage));
+      }
+
+      return stats;
     }
 
 

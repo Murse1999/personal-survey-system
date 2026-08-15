@@ -28,6 +28,7 @@ export interface QuizResponseDto {
   startDate: string;
   endDate: string;
   isPublished: boolean;
+  isOwner: boolean;
   questions: QuestionResponse[];
 }
 
@@ -80,10 +81,17 @@ export interface QuestionStat {
   textAnswers: string[] | null;
 }
 
+export interface AgeStat {
+  label: string;
+  count: number;
+  percentage: number;
+}
+
 export interface QuizStatResponse {
   quizId: number;
   quizTitle: string;
   totalRespondents: number;
+  ageStats: AgeStat[];
   questionStats: QuestionStat[];
 }
 
@@ -112,7 +120,9 @@ export class QuizApiService {
   }
 
   deleteQuiz(id: number): Observable<string> {
-    return this.http.delete<string>(`${API_URL}/quiz/${id}`);
+    return this.http.delete(`${API_URL}/quiz/${id}`, {
+      responseType: 'text'
+    });
   }
 
   submitQuiz(id: number, request: QuizSubmitRequest): Observable<number> {

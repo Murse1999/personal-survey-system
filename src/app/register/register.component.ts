@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
-import { AuthService, RegisterRequest } from '../core/auth.service';
+import { AuthService, AvatarType, RegisterRequest } from '../core/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -18,6 +18,7 @@ export class RegisterComponent {
   password = '';
   confirmPassword = '';
   age: number | null = null;
+  avatarType: AvatarType | null = null;
   errorMessage = '';
   isSubmitting = false;
 
@@ -31,6 +32,11 @@ export class RegisterComponent {
 
     if (!this.name.trim() || !this.phone.trim() || !this.email.trim()) {
       this.errorMessage = '請完成姓名、電話和 Email';
+      return;
+    }
+
+    if (!this.avatarType) {
+      this.errorMessage = '請選擇固定頭像';
       return;
     }
 
@@ -49,7 +55,8 @@ export class RegisterComponent {
       phone: this.phone.trim(),
       email: this.email.trim(),
       password: this.password,
-      age: this.age
+      age: this.age,
+      avatarType: this.avatarType
     };
 
     this.isSubmitting = true;
@@ -64,5 +71,9 @@ export class RegisterComponent {
         this.errorMessage = error.error || '註冊失敗，請稍後再試';
       }
     });
+  }
+
+  selectAvatar(type: AvatarType): void {
+    this.avatarType = type;
   }
 }

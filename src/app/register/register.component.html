@@ -27,6 +27,30 @@
         <input type="number" name="age" [(ngModel)]="age" min="0" />
       </label>
 
+      <div class="avatar-field">
+        <span>固定頭像</span>
+        <div class="avatar-choice-list">
+          <button
+            class="avatar-option"
+            [class.selected]="avatarType === 'MALE'"
+            type="button"
+            (click)="selectAvatar('MALE')"
+          >
+            <img src="avatars/male-avatar.svg" alt="" aria-hidden="true" />
+            <span>男生</span>
+          </button>
+          <button
+            class="avatar-option"
+            [class.selected]="avatarType === 'FEMALE'"
+            type="button"
+            (click)="selectAvatar('FEMALE')"
+          >
+            <img src="avatars/female-avatar.svg" alt="" aria-hidden="true" />
+            <span>女生</span>
+          </button>
+        </div>
+      </div>
+
       <label class="field">
         <span>密碼</span>
         <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required />
