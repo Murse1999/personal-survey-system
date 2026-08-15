@@ -97,7 +97,15 @@ export class CreateQuizComponent {
   }
 
   togglePreview(): void {
-    this.isPreviewMode = !this.isPreviewMode;
+    if (this.isPreviewMode) {
+      this.isPreviewMode = false;
+      return;
+    }
+
+    this.errorMessage = '';
+    if (this.validateQuiz()) {
+      this.isPreviewMode = true;
+    }
   }
 
   addQuestion(): void {
@@ -132,24 +140,12 @@ export class CreateQuizComponent {
       return;
     }
 
-    if (!this.title.trim() || !this.startDate || !this.endDate) {
-      this.errorMessage = '請完成問卷標題和日期';
+    if (!this.validateQuiz()) {
       return;
     }
 
-    if (this.endDate < this.startDate) {
-      this.errorMessage = '結束日期不能早於開始日期';
-      return;
-    }
-
-    const invalidQuestion = this.questions.find((question) =>
-      !question.title.trim()
-      || (question.type !== 'TEXT'
-        && question.options.some((option) => !option.optionText.trim()))
-    );
-
-    if (invalidQuestion) {
-      this.errorMessage = '請完成每一題的題目內容和選項文字';
+    if (!this.isPreviewMode) {
+      this.isPreviewMode = true;
       return;
     }
 
@@ -173,7 +169,7 @@ export class CreateQuizComponent {
     if (this.isEditMode && this.quizId) {
       this.quizApi.updateQuiz(this.quizId, request).subscribe({
         next: () => {
-          this.finishSave(this.quizId!);
+          this.finishSave();
         },
         error: (error: HttpErrorResponse) => {
           this.handleSaveError(error);
@@ -183,8 +179,8 @@ export class CreateQuizComponent {
     }
 
     this.quizApi.createQuiz(request).subscribe({
-      next: (quizId) => {
-        this.finishSave(quizId);
+      next: () => {
+        this.finishSave();
       },
       error: (error: HttpErrorResponse) => {
         this.handleSaveError(error);
@@ -192,9 +188,9 @@ export class CreateQuizComponent {
     });
   }
 
-  private finishSave(quizId: number): void {
+  private finishSave(): void {
     this.isSubmitting = false;
-    this.router.navigate(['/quiz', quizId]);
+    this.router.navigateByUrl('/');
   }
 
   private handleSaveError(error: HttpErrorResponse): void {
@@ -216,6 +212,31 @@ export class CreateQuizComponent {
         { optionCode: 'B', optionText: '' }
       ]
     };
+  }
+
+  private validateQuiz(): boolean {
+    if (!this.title.trim() || !this.startDate || !this.endDate) {
+      this.errorMessage = '請完成問卷標題和日期';
+      return false;
+    }
+
+    if (this.endDate < this.startDate) {
+      this.errorMessage = '結束日期不能早於開始日期';
+      return false;
+    }
+
+    const invalidQuestion = this.questions.find((question) =>
+      !question.title.trim()
+      || (question.type !== 'TEXT'
+        && question.options.some((option) => !option.optionText.trim()))
+    );
+
+    if (invalidQuestion) {
+      this.errorMessage = '請完成每一題的題目內容和選項文字';
+      return false;
+    }
+
+    return true;
   }
 
   private nextOptionCode(index: number): string {

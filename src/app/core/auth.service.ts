@@ -4,15 +4,36 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 import { API_URL } from './api.config';
 
+export type AvatarType = 'MALE' | 'FEMALE';
+
 export interface LoginResponse {
   token: string;
   email: string;
   role: string;
+  name: string;
+  phone: string;
+  age: number | null;
+  avatarType: AvatarType;
 }
 
 export interface CurrentUser {
   email: string;
   role: string;
+  name: string;
+  phone: string;
+  age: number | null;
+  avatarType: AvatarType;
+}
+
+export interface UserProfileResponse extends CurrentUser {
+  id: number;
+}
+
+export interface UserProfileUpdateRequest {
+  name: string;
+  phone: string;
+  age: number | null;
+  avatarType: AvatarType;
 }
 
 export interface RegisterRequest {
@@ -21,6 +42,17 @@ export interface RegisterRequest {
   password: string;
   email: string;
   age: number | null;
+  avatarType: AvatarType;
+}
+
+export interface PasswordResetResponse {
+  message: string;
+}
+
+export interface PasswordResetConfirmRequest {
+  email: string;
+  code: string;
+  newPassword: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -45,6 +77,34 @@ export class AuthService {
     return this.http.post<number>(`${API_URL}/users`, request);
   }
 
+  requestPasswordReset(email: string): Observable<PasswordResetResponse> {
+    return this.http.post<PasswordResetResponse>(
+      `${API_URL}/users/password-reset/request`,
+      { email }
+    );
+  }
+
+  confirmPasswordReset(
+    request: PasswordResetConfirmRequest
+  ): Observable<PasswordResetResponse> {
+    return this.http.post<PasswordResetResponse>(
+      `${API_URL}/users/password-reset/confirm`,
+      request
+    );
+  }
+
+  getMyProfile(): Observable<UserProfileResponse> {
+    return this.http
+      .get<UserProfileResponse>(`${API_URL}/users/me`)
+      .pipe(tap((profile) => this.saveProfile(profile)));
+  }
+
+  updateMyProfile(request: UserProfileUpdateRequest): Observable<UserProfileResponse> {
+    return this.http
+      .put<UserProfileResponse>(`${API_URL}/users/me`, request)
+      .pipe(tap((profile) => this.saveProfile(profile)));
+  }
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
@@ -65,14 +125,30 @@ export class AuthService {
 
   private saveSession(response: LoginResponse): void {
     localStorage.setItem(this.tokenKey, response.token);
-    localStorage.setItem(
-      this.userKey,
-      JSON.stringify({ email: response.email, role: response.role })
-    );
-    this.currentUserSubject.next({
+    this.saveCurrentUser({
       email: response.email,
-      role: response.role
+      role: response.role,
+      name: response.name,
+      phone: response.phone,
+      age: response.age,
+      avatarType: response.avatarType
     });
+  }
+
+  private saveProfile(profile: UserProfileResponse): void {
+    this.saveCurrentUser({
+      email: profile.email,
+      role: profile.role,
+      name: profile.name,
+      phone: profile.phone,
+      age: profile.age,
+      avatarType: profile.avatarType
+    });
+  }
+
+  private saveCurrentUser(user: CurrentUser): void {
+    localStorage.setItem(this.userKey, JSON.stringify(user));
+    this.currentUserSubject.next(user);
   }
 
   private readStoredUser(): CurrentUser | null {
@@ -83,7 +159,15 @@ export class AuthService {
     }
 
     try {
-      return JSON.parse(storedUser) as CurrentUser;
+      const parsed = JSON.parse(storedUser) as Partial<CurrentUser>;
+      return {
+        email: parsed.email ?? '',
+        role: parsed.role ?? 'USER',
+        name: parsed.name ?? '',
+        phone: parsed.phone ?? '',
+        age: parsed.age ?? null,
+        avatarType: parsed.avatarType === 'FEMALE' ? 'FEMALE' : 'MALE'
+      };
     } catch {
       localStorage.removeItem(this.userKey);
       return null;

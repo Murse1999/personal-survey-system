@@ -6,6 +6,13 @@ body {
   background: #000;
 }
 
+:root {
+  --button-bg: rgba(142, 142, 142, 0.26);
+  --button-bg-hover: rgba(188, 188, 188, 0.36);
+  --button-border: rgba(224, 224, 224, 0.42);
+  --button-text: #f5f5f5;
+}
+
 body {
   overflow-x: hidden;
 }

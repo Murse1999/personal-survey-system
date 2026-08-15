@@ -28,6 +28,9 @@ export class LoginComponent {
     if (this.route.snapshot.queryParamMap.get('registered') === '1') {
       this.noticeMessage = '註冊成功，請使用新帳號登入';
     }
+    if (this.route.snapshot.queryParamMap.get('reset') === '1') {
+      this.noticeMessage = '密碼已更新，請使用新密碼登入';
+    }
   }
 
   submitLogin(): void {

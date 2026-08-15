@@ -4,9 +4,11 @@ import { PiechartComponent } from './piechart/piechart.component';
 import { LoginComponent } from './login/login.component';
 import { CreateQuizComponent } from './create/create-quiz.component';
 import { RegisterComponent } from './register/register.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 export const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
+  {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'create/:id/edit', component: CreateQuizComponent},
   {path: 'create', component: CreateQuizComponent},
   {path: 'quiz/:id/statistics', component: PiechartComponent},

@@ -57,7 +57,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/users",
-                                "/api/users/login"
+                                "/api/users/login",
+                                "/api/users/password-reset/request",
+                                "/api/users/password-reset/confirm"
                         ).permitAll()
 
                         // 「我的問卷」需要登入；這個規則要放在公開問卷規則前面。

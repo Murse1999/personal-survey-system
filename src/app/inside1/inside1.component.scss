@@ -132,6 +132,50 @@ h1 {
   background: rgba(84, 153, 255, 0.07);
 }
 
+.owner-message {
+  display: grid;
+  gap: 12px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.owner-message .eyebrow {
+  margin-bottom: 0;
+}
+
+.owner-message h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.owner-message > p:not(.eyebrow) {
+  max-width: 680px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.75;
+}
+
+.owner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.owner-actions a {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--button-border);
+  border-radius: 9px;
+  color: var(--button-text);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.owner-actions a:hover {
+  background: var(--button-bg-hover);
+}
+
 .survey-intro h2,
 .section-heading h2 {
   margin-bottom: 0;
@@ -283,7 +327,10 @@ input[type="radio"] {
 
 button {
   min-height: 46px;
+  border: 1px solid var(--button-border);
   border-radius: 12px;
+  background: var(--button-bg);
+  color: var(--button-text);
   padding: 0 19px;
   cursor: pointer;
   font-weight: 900;
@@ -292,12 +339,13 @@ button {
 
 button:hover {
   transform: translateY(-2px);
+  background: var(--button-bg-hover);
 }
 
 .secondary-button {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
+  border-color: var(--button-border);
+  background: var(--button-bg);
+  color: var(--button-text);
 }
 
 .cancel-button {
@@ -327,10 +375,10 @@ button:hover {
 }
 
 .primary-button {
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  background: linear-gradient(135deg, #fff, #9ed4ff 50%, #6d66ff);
-  color: #070911;
-  box-shadow: 0 12px 28px rgba(78, 136, 255, 0.28);
+  border: 1px solid var(--button-border);
+  background: var(--button-bg);
+  color: var(--button-text);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
 }
 
 @keyframes pageEnter {

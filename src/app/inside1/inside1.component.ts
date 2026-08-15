@@ -63,7 +63,7 @@ export class Inside1Component {
   }
 
   isOpenForAnswers(): boolean {
-    if (!this.quiz || !this.quiz.isPublished) {
+    if (!this.quiz || this.quiz.isOwner || !this.quiz.isPublished) {
       return false;
     }
 

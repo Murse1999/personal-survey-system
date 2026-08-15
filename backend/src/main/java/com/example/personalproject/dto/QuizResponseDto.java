@@ -30,6 +30,9 @@ public class QuizResponseDto {
   // 問卷是否已發布。
   private Boolean isPublished;
 
+  // 目前登入者是否為這份問卷的建立者。
+  private boolean isOwner;
+
   // 問卷裡面的所有題目。
   private List<QuestionResponse> questions = new ArrayList<>();
 
@@ -102,6 +105,14 @@ public class QuizResponseDto {
 
   public void setIsPublished(Boolean published) {
     isPublished = published;
+  }
+
+  public boolean getIsOwner() {
+    return isOwner;
+  }
+
+  public void setIsOwner(boolean owner) {
+    isOwner = owner;
   }
 
   public List<QuestionResponse> getQuestions() {

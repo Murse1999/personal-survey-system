@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title>男生頭像</title>
+  <circle cx="128" cy="128" r="120" fill="#bfe1ff"/>
+  <path fill="#2f6fb5" d="M128 47c-28 0-51 23-51 51v18c0 17 8 32 21 41v17c-36 10-65 34-77 70h214c-12-36-41-60-77-70v-17c13-9 21-24 21-41V98c0-28-23-51-51-51Z"/>
+  <path fill="#1e4d85" d="M77 101c0-30 23-54 51-54s51 24 51 54v12c-13-13-31-21-51-21s-38 8-51 21V101Z"/>
+</svg>
